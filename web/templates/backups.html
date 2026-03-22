@@ -1,0 +1,87 @@
+{# templates/backups.html - Backup management page #}
+
+{% extends "base.html" %}
+
+{% block title %}Backup Management{% endblock %}
+
+{% block content %}
+<h2>Backup Jobs</h2>
+
+<div style="margin-bottom: 20px;">
+    <button onclick="document.getElementById('addForm').style.display='block'" class="button">+ Add Backup</button>
+</div>
+
+<div id="addForm" style="display: none; background: #f7f7f7; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+    <h3>New Backup</h3>
+    <form method="POST" action="{{ url_for('add_backup') }}">
+        <div class="form-group">
+            <label>What to backup?</label>
+            <input type="text" name="sources" placeholder="/var/www /etc /home" required>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Time (HH:MM)</label>
+                <input type="text" name="time" value="02:00" required>
+            </div>
+            <div class="form-group">
+                <label>Schedule</label>
+                <select name="schedule">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly (Sunday)</option>
+                    <option value="monthly">Monthly (1st day)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="submit">Add</button>
+            <button type="button" onclick="document.getElementById('addForm').style.display='none'">Cancel</button>
+        </div>
+    </form>
+</div>
+
+{% if backups %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Sources</th>
+                <th>Time</th>
+                <th>Schedule</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for backup in backups %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ backup.sources }}</td>
+                <td>{{ backup.time }}</td>
+                <td>
+                    {% if backup.schedule == 'daily' %}Daily
+                    {% elif backup.schedule == 'weekly' %}Weekly
+                    {% else %}Monthly{% endif %}
+                </td>
+                <td>
+                    {% if backup.enabled == 'true' %}
+                        <span style="color: green;">Enabled</span>
+                    {% else %}
+                        <span style="color: gray;">Disabled</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('toggle_backup', backup_id=loop.index0) }}" class="button" style="padding: 5px 10px; font-size: 12px;">
+                        {% if backup.enabled == 'true' %}Disable{% else %}Enable{% endif %}
+                    </a>
+                    <a href="{{ url_for('delete_backup', backup_id=loop.index0) }}" class="button danger" style="padding: 5px 10px; font-size: 12px;" onclick="return confirm('Delete this backup?')">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No backups configured. Click "Add Backup" to create your first backup.</p>
+{% endif %}
+{% endblock %}

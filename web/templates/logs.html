@@ -1,0 +1,29 @@
+{# templates/logs.html - Logs page #}
+
+{% extends "base.html" %}
+
+{% block title %}Logs{% endblock %}
+
+{% block content %}
+<h2>System Logs</h2>
+
+<div style="margin-bottom: 20px;">
+    <form method="GET" style="display: inline;">
+        <select name="lines" onchange="this.form.submit()">
+            <option value="50" {% if request.args.get('lines') == '50' %}selected{% endif %}>50 lines</option>
+            <option value="100" {% if request.args.get('lines') != '200' and request.args.get('lines') != '50' %}selected{% endif %}>100 lines</option>
+            <option value="200" {% if request.args.get('lines') == '200' %}selected{% endif %}>200 lines</option>
+        </select>
+    </form>
+</div>
+
+<h3>Backup Logs</h3>
+<div class="log-view">
+    <pre>{{ backup_logs }}</pre>
+</div>
+
+<h3 style="margin-top: 30px;">Access Logs (SSH)</h3>
+<div class="log-view">
+    <pre>{{ access_logs }}</pre>
+</div>
+{% endblock %}

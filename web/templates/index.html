@@ -1,0 +1,42 @@
+{# templates/index.html - Dashboard page #}
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>System Statistics</h2>
+
+<div class="stats">
+    <div class="stat-card">
+        <h3>Free Space on Backup Server</h3>
+        {% if free_space %}
+            <div class="value">{{ free_space.free }}</div>
+            <small>of {{ free_space.total }} ({{ free_space.use_percent }} used)</small>
+        {% else %}
+            <div class="value">N/A</div>
+        {% endif %}
+    </div>
+</div>
+
+<div style="margin-top: 30px;">
+    <h3>Quick Actions</h3>
+    <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <a href="{{ url_for('run_now') }}" class="button" onclick="return confirm('Run backup now?')">Run Backup Now</a>
+    </div>
+</div>
+
+<div style="margin-top: 30px;">
+    <h3>Recent Logs</h3>
+    <div class="log-view">
+        {% if logs %}
+            <pre>{{ logs }}</pre>
+        {% else %}
+            <p>No logs available</p>
+        {% endif %}
+    </div>
+    <div style="margin-top: 10px;">
+        <a href="{{ url_for('logs') }}" class="button">View All Logs</a>
+    </div>
+</div>
+{% endblock %}
